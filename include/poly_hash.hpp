@@ -1,13 +1,14 @@
 // poly_hash
 #include <vector>
 #include <string>
+#include <algorithm>
 #include <cassert>
 #include <cstring>
 #include <cstdlib>
 #include <ctime>
 #include <cstdint>
 namespace libcp
-{	
+{
 	class poly_hash
 	{
 	private:
@@ -35,6 +36,7 @@ namespace libcp
 		}
 		std::vector<uint64_t> vec;
 	public:
+		poly_hash(): vec() {}
 		poly_hash(const char *str)
 		{
 			size_t n = strlen(str);
@@ -70,6 +72,11 @@ namespace libcp
 		{
 			return vec.back();
 		}
+		uint64_t get_hash(size_t i) const
+		{
+			assert(i >= 0 && i < vec.size());
+			return vec[i];
+		}
 		uint64_t get_hash(size_t i, size_t j) const
 		{
 			assert(i <= j && i >= 0 && j < vec.size());
@@ -79,4 +86,18 @@ namespace libcp
 	};
 	uint64_t poly_hash::mod = 0;
 	std::vector<uint64_t> poly_hash::basepow = std::vector<uint64_t>(1, 1);
+	bool operator < (const poly_hash &lhs, const poly_hash &rhs)
+	{
+		size_t n = std::min(lhs.size(), rhs.size());
+		size_t s = 1;
+		while (s << 1 < n)
+			s <<= 1;
+		for (; s; s >>= 1)
+			if (n > s && lhs.get_hash(n - s) != rhs.get_hash(n - s))
+				n -= s;
+		if (n == std::min(lhs.size(), rhs.size()))
+			return lhs.size() < rhs.size();
+		else
+			return lhs.get_hash(n - 1, n) < rhs.get_hash(n - 1, n);
+	}
 }
