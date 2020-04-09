@@ -2,30 +2,29 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <chrono>
+#include <random>
 #include <cassert>
 #include <cstring>
-#include <cstdlib>
-#include <ctime>
 #include <cstdint>
 namespace libcp
 {
 	class poly_hash
 	{
 	private:
-		static const uint64_t base = 257;
-		static uint64_t mod;
+		static const uint64_t mod = 2147483647;
+		static uint64_t base;
 		static std::vector<uint64_t> basepow;
-		static void init()
+		static void generate_base()
 		{
-			uint64_t mod_list[] = {1, 19, 61, 69, 85, 99, 105, 151, 159, 171};
-			srand(time(NULL));
-			mod = (1LL << 31) - mod_list[rand() % 10];
-			basepow = std::vector<uint64_t>(1, 1);
+			unsigned seed = std::chrono::steady_clock::now().time_since_epoch().count();
+			std::mt19937 generator(seed);
+			base = std::uniform_int_distribution<int>(256, 1048576)(generator);
 		}
-		void extend(size_t n)
+		static void extend(size_t n)
 		{
-			if (mod == 0)
-				init();
+			if (base == 0)
+				generate_base();
 			if (n >= basepow.size())
 			{
 				size_t m = basepow.size();
@@ -84,7 +83,7 @@ namespace libcp
 			return tmp < mod ? tmp : mod + tmp;
 		}
 	};
-	uint64_t poly_hash::mod = 0;
+	uint64_t poly_hash::base = 0;
 	std::vector<uint64_t> poly_hash::basepow = std::vector<uint64_t>(1, 1);
 	bool operator < (const poly_hash &lhs, const poly_hash &rhs)
 	{
