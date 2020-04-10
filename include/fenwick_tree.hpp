@@ -1,24 +1,25 @@
 // fenwick_tree
 #include <cassert>
 #include <functional>
+#include <algorithm>
 namespace libcp
 {
-	template<size_t Size, class Type, class Op = std::plus<Type>, Type Init = Type()>
+	template<size_t Size, class Type, class Op = std::plus<Type>, Type Neut = Type()>
 	class fenwick_tree
 	{
 	private:
-		Type arr[Size];
+		Type arr[Size + 1];
 		Op op;
 	public:
 		fenwick_tree(): op()
 		{
-			for (int i = 0; i < Size; ++i)
-				arr[i] = Init;
+			std::fill(arr, arr + Size + 1, Neut);
 		}
 		void update(size_t p, const Type &v)
 		{
-			assert(p >= 0 && p < Size);
-			while (p < Size)
+			++p;
+			assert(p >= 0 && p <= Size);
+			while (p <= Size)
 			{
 				arr[p] = op(std::move(arr[p]), v);
 				p += p & -p;
@@ -26,14 +27,19 @@ namespace libcp
 		}
 		Type query(size_t p) const
 		{
+			++p;
 			assert(p >= 0 && p < Size);
-			Type res = Init;
+			Type res = Neut;
 			while (p > 0)
 			{
 				res = op(std::move(res), arr[p]);
 				p -= p & -p;
 			}
 			return res;
+		}
+		void clear(size_t n = Size)
+		{
+			std::fill(arr + 1, arr + n + 1, Neut);
 		}
 	};
 }

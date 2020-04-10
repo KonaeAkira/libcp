@@ -30,5 +30,14 @@ namespace libcp
 			assert(finalized);
 			return map[e];
 		}
+		void clear()
+		{
+			map.clear();
+			finalized = false;
+		}
+		size_t size() const
+		{
+			return map.size();
+		}
 	};
 }
