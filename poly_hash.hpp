@@ -73,7 +73,7 @@ namespace libcp
 		}
 		uint64_t get_hash(size_t i) const
 		{
-			assert(i >= 0 && i < vec.size());
+			assert(i >= 0 && i < vec.size() - 1);
 			return vec[i];
 		}
 		uint64_t get_hash(size_t i, size_t j) const
