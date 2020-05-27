@@ -1,6 +1,3 @@
-#include <bits/stdc++.h>
-// min_cost_max_flow
-// tested on CF 1187G
 namespace libcp
 {
     template<class CapType, class CostType>
@@ -17,6 +14,7 @@ namespace libcp
         std::vector<std::vector<size_t>> adj;
         std::vector<edge> edg;
         std::unordered_map<size_t, size_t> map;
+        std::vector<size_t> reverse_map;
         std::vector<size_t> augmenting_path;
     public:
         min_cost_max_flow(): adj(), edg(), map(), augmenting_path() {}
@@ -25,11 +23,13 @@ namespace libcp
             if (!map.count(src))
             {
                 map.emplace(src, map.size());
+                reverse_map.push_back(src);
                 adj.emplace_back();
             }
             if (!map.count(tar))
             {
                 map.emplace(tar, map.size());
+                reverse_map.push_back(tar);
                 adj.emplace_back();
             }
             src = map.at(src); tar = map.at(tar);
@@ -38,9 +38,10 @@ namespace libcp
             adj[tar].push_back(edg.size());
             edg.emplace_back(src, 0, -cost);
         }
-        std::pair<CapType, CostType> find_augmenting_path(size_t source, size_t sink)
+        std::pair<CapType, CostType> __find_augmenting_path(size_t source, size_t sink)
         {
-            assert(map.count(source) && map.count(sink));
+            if (!map.count(source) || !map.count(sink))
+                return std::make_pair(0, 0);
             source = map.at(source); sink = map.at(sink);
             std::vector<bool> in_queue(map.size(), false);
             std::vector<size_t> trace(map.size(), std::numeric_limits<size_t>::max());
@@ -74,7 +75,7 @@ namespace libcp
                     augmenting_path.push_back(trace[cur]);
             return std::make_pair(cap[sink], cost[sink]);
         }
-        void push_augmenting_path()
+        void __push_augmenting_path()
         {
             assert(!augmenting_path.empty());
             CapType cap = std::numeric_limits<CapType>::max();
@@ -86,6 +87,28 @@ namespace libcp
                 edg[e ^ 1].cap += cap;
             }
             augmenting_path.clear();
+        }
+        std::pair<CapType, CostType> min_cost_max_flow(size_t source, size_t sink)
+        {
+            std::pair<CapType, CostType> result(0, 0), tmp;
+            while ((tmp = __find_augmenting_path(source, sink)).first != 0)
+            {
+                result.first += tmp.first;
+                result.second += tmp.first * tmp.second;
+                __push_augmenting_path();
+            }
+            return result;
+        }
+        std::pair<CapType, CostType> min_cost_flow(size_t source, size_t sink)
+        {
+            std::pair<CapType, CostType> result(0, 0), tmp;
+            while ((tmp = __find_augmenting_path(source, sink)).second != 0)
+            {
+                result.first += tmp.first;
+                result.second += tmp.first * tmp.second;
+                __push_augmenting_path();
+            }
+            return result;
         }
     };
 }
