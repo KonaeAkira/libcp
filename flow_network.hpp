@@ -1,7 +1,7 @@
 namespace libcp
 {
     template<class CapType, class CostType>
-    class min_cost_max_flow
+    class flow_network
     {
     private:
         struct edge
@@ -14,10 +14,9 @@ namespace libcp
         std::vector<std::vector<size_t>> adj;
         std::vector<edge> edg;
         std::unordered_map<size_t, size_t> map;
-        std::vector<size_t> reverse_map;
         std::vector<size_t> augmenting_path;
     public:
-        min_cost_max_flow(): adj(), edg(), map(), augmenting_path() {}
+        flow_network(): adj(), edg(), map(), augmenting_path() {}
         void add_edge(size_t src, size_t tar, const CapType cap, const CostType cost)
         {
             if (!map.count(src))
@@ -38,7 +37,7 @@ namespace libcp
             adj[tar].push_back(edg.size());
             edg.emplace_back(src, 0, -cost);
         }
-        std::pair<CapType, CostType> __find_augmenting_path(size_t source, size_t sink)
+        std::pair<CapType, CostType> find_augmenting_path(size_t source, size_t sink)
         {
             if (!map.count(source) || !map.count(sink))
                 return std::make_pair(CapType(), CostType());
@@ -75,7 +74,7 @@ namespace libcp
                     augmenting_path.push_back(trace[cur]);
             return std::make_pair(cap[sink], cost[sink]);
         }
-        void __push_augmenting_path()
+        void push_augmenting_path()
         {
             assert(!augmenting_path.empty());
             CapType cap = std::numeric_limits<CapType>::max();
@@ -88,7 +87,7 @@ namespace libcp
             }
             augmenting_path.clear();
         }
-        std::pair<CapType, CostType> get_min_cost_max_flow(size_t source, size_t sink)
+        std::pair<CapType, CostType> min_cost_max_flow(size_t source, size_t sink)
         {
             std::pair<CapType, CostType> result(0, 0), tmp;
             while ((tmp = __find_augmenting_path(source, sink)).first != 0)
@@ -99,7 +98,7 @@ namespace libcp
             }
             return result;
         }
-        std::pair<CapType, CostType> get_min_cost_flow(size_t source, size_t sink)
+        std::pair<CapType, CostType> min_cost_flow(size_t source, size_t sink)
         {
             std::pair<CapType, CostType> result(0, 0), tmp;
             while ((tmp = __find_augmenting_path(source, sink)).second != 0)
@@ -110,12 +109,12 @@ namespace libcp
             }
             return result;
         }
-        std::vector<std::pair<size_t, CapType>> get_flow_network() const
+        std::vector<std::pair<size_t, CapType>> flow_network() const
         {
             std::vector<std::pair<size_t, CapType>> vec;
             for (size_t i = 1; i < edg.size(); i += 2)
                 vec.emplace_back(i >> 1, edg.at(i).cap);
-            return vec;
+            return std::move(vec);
         }
     };
 }
