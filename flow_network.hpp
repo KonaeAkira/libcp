@@ -1,3 +1,5 @@
+#ifndef FLOW_NETWORK_HPP
+#define FLOW_NETWORK_HPP
 namespace libcp
 {
     template<class CapType, class CostType>
@@ -22,13 +24,11 @@ namespace libcp
             if (!map.count(src))
             {
                 map.emplace(src, map.size());
-                reverse_map.push_back(src);
                 adj.emplace_back();
             }
             if (!map.count(tar))
             {
                 map.emplace(tar, map.size());
-                reverse_map.push_back(tar);
                 adj.emplace_back();
             }
             src = map.at(src); tar = map.at(tar);
@@ -90,31 +90,32 @@ namespace libcp
         std::pair<CapType, CostType> min_cost_max_flow(size_t source, size_t sink)
         {
             std::pair<CapType, CostType> result(0, 0), tmp;
-            while ((tmp = __find_augmenting_path(source, sink)).first != 0)
+            while ((tmp = find_augmenting_path(source, sink)).first != 0)
             {
                 result.first += tmp.first;
                 result.second += tmp.first * tmp.second;
-                __push_augmenting_path();
+                push_augmenting_path();
             }
             return result;
         }
         std::pair<CapType, CostType> min_cost_flow(size_t source, size_t sink)
         {
             std::pair<CapType, CostType> result(0, 0), tmp;
-            while ((tmp = __find_augmenting_path(source, sink)).second != 0)
+            while ((tmp = find_augmenting_path(source, sink)).second < 0)
             {
                 result.first += tmp.first;
                 result.second += tmp.first * tmp.second;
-                __push_augmenting_path();
+                push_augmenting_path();
             }
             return result;
         }
-        std::vector<std::pair<size_t, CapType>> flow_network() const
+        std::vector<CapType> flow_function() const
         {
-            std::vector<std::pair<size_t, CapType>> vec;
+            std::vector<CapType> vec;
             for (size_t i = 1; i < edg.size(); i += 2)
-                vec.emplace_back(i >> 1, edg.at(i).cap);
+                vec.push_back(edg.at(i).cap);
             return std::move(vec);
         }
     };
 }
+#endif
