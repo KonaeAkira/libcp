@@ -2,10 +2,11 @@
 #define LI_CHAO_TREE_HPP
 namespace libcp
 {
-	template<class T, T LO, T HI>
+	template<class T>
 	class li_chao_tree
 	{
 	private:
+		const T LO, HI;
 		static const T INF = std::numeric_limits<T>::max();
 		struct node;
 		std::vector<node> vec;
@@ -51,7 +52,11 @@ namespace libcp
 			else return eval(vec[i].func, x);
 		}
 	public:
-		li_chao_tree(): vec(1, node(std::make_pair((T)0, INF))) {}
+		li_chao_tree(const T lo, const T hi): LO(lo), HI(hi), vec(1, node(std::make_pair((T)0, INF))) {}
+		void clear()
+		{
+			vec = std::vector<node>(1, node(std::make_pair((T)0, INF)));
+		}
 		void insert(const std::pair<T, T> func)
 		{
 			update(0, LO, HI, func);
@@ -60,7 +65,7 @@ namespace libcp
 		{
 			update(0, LO, HI, std::make_pair(a, b));
 		}
-		void insert(const li_chao_tree<T, LO, HI> &tree)
+		void insert(const li_chao_tree<T> &tree)
 		{
 			for (size_t i = 0; i < tree.vec.size(); ++i)
 				update(0, LO, HI, tree.vec[i].func);
