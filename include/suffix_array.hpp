@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-// https://github.com/KonaeAkira/libcp/include/suffix_array.hpp/
+// https://github.com/KonaeAkira/libcp/blob/master/include/suffix_array.hpp
 std::vector<uint32_t> cyclic_array(const std::string &str)
 {
 	const uint32_t n = str.size();

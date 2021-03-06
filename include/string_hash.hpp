@@ -4,7 +4,7 @@
 #include <cassert>
 #include <iostream>
 #include <algorithm>
-// https://github.com/KonaeAkira/libcp/include/string_hash.hpp/
+// https://github.com/KonaeAkira/libcp/blob/master/include/string_hash.hpp
 typedef modular_number<uint64_t, 1000000009> hash_num_t;
 const hash_num_t HASH_BASE(rand(256, 65536));
 std::vector<hash_num_t> HASH_BASE_POW(1, 1);

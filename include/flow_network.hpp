@@ -2,7 +2,7 @@
 #include <unordered_map>
 #include <algorithm>
 #include <cassert>
-// https://github.com/KonaeAkira/libcp/include/flow_network.hpp/
+// https://github.com/KonaeAkira/libcp/blob/master/include/flow_network.hpp
 template<class CapType, class CostType>
 class flow_network
 {

@@ -1,5 +1,5 @@
 #include <iostream>
-// https://github.com/KonaeAkira/libcp/include/modular_arithmetic.hpp/
+// https://github.com/KonaeAkira/libcp/blob/master/include/modular_arithmetic.hpp
 template<class T, T MOD>
 class modular_number
 {

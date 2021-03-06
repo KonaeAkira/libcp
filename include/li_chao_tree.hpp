@@ -1,7 +1,7 @@
 #include <cassert>
 #include <algorithm>
 #include <vector>
-// https://github.com/KonaeAkira/libcp/include/li_chao_tree.hpp/
+// https://github.com/KonaeAkira/libcp/blob/master/include/li_chao_tree.hpp
 template<class T>
 class li_chao_tree
 {
